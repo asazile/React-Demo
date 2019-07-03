@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="lib/react.development.js"></script>
+    <script src="lib/react-dom.development.js"></script>
+    <script src="lib/babel.min.js"></script>
+    <script src="lib/axios.min.js"></script>
+</head>
+<body>
+<div id="myApp">
+
+</div>
+</body>
+<script type="text/babel">
+    class My extends React.Component{
+        constructor(props){
+            console.log("constructor");
+            super(props);
+            this.state={
+                one:[],
+                oneStr:"13",
+                two:[],
+                twoStr:"1302",
+                three:[],
+                threeStr:"130203"
+            }
+        }
+        changeOne(e){
+            if(e.target.value!=='0'){
+                this.setState({
+                    two:this.state.one.find(v=>v.label === e.target.value).children,
+                    three:[],
+                    oneStr:e.target.value,
+                    twoStr:e.target.value
+                })
+            }else {
+                this.setState({
+                    oneStr:e.target.value,
+                    two:[],
+                    three:[]
+                })
+            }
+            // console.log(e.target.value);
+            // console.log(e.target.selectedIndex);
+            // console.log(e.target.options[0])
+            // console.log(e.target.options[e.target.selectedIndex])
+            // console.log(e.target.options[e.target.selectedIndex].text)
+            // console.log(e.target.options[e.target.selectedIndex].value)
+        }
+        changeTwo(e){
+            if(e.target.value!=='0'){
+                this.setState({
+                    twoStr:e.target.value,
+                    three:this.state.two.find(v=>v.label===e.target.value).children
+                })
+            }else {
+                this.setState({
+                    twoStr:e.target.value,
+                    three:[]
+                })
+            }
+        }
+        changeThree(e){
+            this.setState({
+                threeStr:e.target.value
+            })
+        }
+        render(){
+            console.log("render");
+            return(
+                    <div>
+                        <select name="one" value={this.state.oneStr} onChange={this.changeOne.bind(this)}>
+                            <option value="0" >请选择</option>
+                            {
+                                this.state.one.map((v,i)=>{
+                                    return (
+                                            <option value={v.label} key={v.label}>{v.value}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <select name="two" value={this.state.twoStr} onChange={this.changeTwo.bind(this)}>
+                            <option value="0">请选择</option>
+                            {
+                                this.state.two.map((v,i)=>{
+                                    return (
+                                            <option value={v.label} key={v.label}>{v.value}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <select name="three" onChange={this.changeThree.bind(this)} value={this.state.threeStr}>
+                            <option value="0" >请选择</option>
+                            {
+                                this.state.three.map((v,i)=>{
+                                    return (
+                                            <option value={v.label} key={v.label}>{v.value}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                    </div>
+            )
+        }
+        componentDidMount(){
+            // console.log("componentDidMount");
+            axios.get("./data/data.json")
+                .then(({data})=>{
+                    // console.log(data.data);
+                    let one = data.data;
+                    let two = one.find(v=>v.label === this.state.oneStr).children;
+                    let three = two.find(v=>v.label === this.state.twoStr).children;
+                    console.log(one);
+                    this.setState(
+                        {
+                            one,
+                            two,
+                            three
+                        }
+                    )
+                })
+        }
+    }
+    ReactDOM.render(<My/>,document.querySelector("#myApp"));
+</script>
+</html>
